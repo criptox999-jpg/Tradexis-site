@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>TEST</title>
+  <title>Tradexis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 16px;
+      margin-bottom: 25px;
+      color: #d1d1d1;
+    }
+
+    button {
+      background: #00c6ff;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      border: none;
+      color: white;
+      padding: 15px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #7CFC00;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>ЕСЛИ ЭТО ВИДНО — САЙТ РАБОТАЕТ</h1>
+
+  <div class="container">
+    <h1>Tradexis</h1>
+    <p>
+      Проект дисциплины, терпения и правильных решений.  
+      Начни путь с 10$ и пройди 5 ступеней.
+    </p>
+
+    <button onclick="connectWallet()">Подключить кошелёк</button>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    function connectWallet() {
+      document.getElementById("status").innerText =
+        "Кошелёк будет подключён здесь (Web3 позже)";
+    }
+  </script>
+
 </body>
 </html>
