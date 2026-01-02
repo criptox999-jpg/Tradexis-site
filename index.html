@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradexia | Автоматический BNB Смарт-Контракт</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        :root { --accent: #f3ba2f; --bg: #0b0e11; --card: #1e2329; --text: #eaecef; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--accent); font-size: 2.2rem; margin: 0; text-transform: uppercase; }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; border: 1px solid #474d57; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn { background: var(--accent); color: #000; padding: 16px; border-radius: 12px; font-weight: bold; border: none; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px; }
+        .status-line { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 20px; opacity: 0.8; }
+        #refBox { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px dashed var(--accent); font-size: 12px; word-break: break-all; display: none; }
+        .price-tag { text-align: center; font-size: 20px; margin: 15px 0; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>TRADEXIA</h1>
+        <p>Миссия: преврати $10 в $872.4 (BNB)</p>
+    </header>
+
+    <div class="card">
+        <div class="status-line">
+            <span>Статус:</span>
+            <span id="walletStatus">Кошелек не подключен</span>
+        </div>
+        
+        <button id="connectBtn" class="btn">ПОДКЛЮЧИТЬ КОШЕЛЕК</button>
+
+        <div id="userPanel" style="display: none;">
+            <div class="price-tag">Вход: <span id="bnbAmount">0.00</span> BNB (~$10)</div>
+            <p style="text-align: center; font-size: 14px;">Пригласитель: <br><small id="displayRef" style="color:var(--accent)">0x00...000</small></p>
+            <button id="payBtn" class="btn">ОПЛАТИТЬ И ВОЙТИ</button>
+            
+            <div id="refBox">
+                <strong>Ваша реферальная ссылка:</strong><br>
+                <span id="myLink"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let provider, signer, address;
+    const connectBtn = document.getElementById('connectBtn');
+    const userPanel = document.getElementById('userPanel');
+
+    // Получаем реферала из ссылки
+    const urlParams = new URLSearchParams(window.location.search);
+    let referrer = urlParams.get('ref') || "0x0000000000000000000000000000000000000000";
+
+    async function updatePrice() {
+        try {
+            const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT');
+            const data = await res.json();
+            const amount = (10 / parseFloat(data.price)).toFixed(4);
+            document.getElementById('bnbAmount').innerText = amount;
+        } catch (e) { console.error("Ошибка курса"); }
+    }
+
+    async function connect() {
+        if (window.ethereum) {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            address = await signer.getAddress();
+            
+            document.getElementById('walletStatus').innerText = address.substring(0,6) + "..." + address.substring(38);
+            connectBtn.style.display = 'none';
+            userPanel.style.display = 'block';
+            
+            // Показываем ссылку пользователя
+            const myLink = window.location.origin + window.location.pathname + "?ref=" + address;
+            document.getElementById('myLink').innerText = myLink;
+            document.getElementById('refBox').style.display = 'block';
+            document.getElementById('displayRef').innerText = referrer;
+            
+            updatePrice();
+        } else {
+            alert("Пожалуйста, используйте DApp браузер в Trust Wallet!");
+        }
+    }
+
+    connectBtn.onclick = connect;
+    updatePrice();
+</script>
+
+</body>
+</html>
